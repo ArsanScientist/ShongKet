@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The in-app brand mark: a simple text-based mark. Used at small sizes on the
+     home header, where it is clipped to a circle, so the background runs full bleed. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+
+    <path
+        android:fillColor="#064A3F"
+        android:pathData="M0,0 L120,0 L120,120 L0,120 Z" />
+
+    <!-- Horizontal bar - representing the "S" in Shongket / সংকেত -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M28,54 L92,54"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeWidth="8" />
+</vector>

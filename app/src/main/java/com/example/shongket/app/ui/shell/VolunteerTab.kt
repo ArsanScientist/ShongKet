@@ -1,0 +1,293 @@
+package com.example.shongket.ui.shell
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.AlertTriangle
+import compose.icons.feathericons.BarChart2
+import compose.icons.feathericons.ChevronRight
+import compose.icons.feathericons.HelpCircle
+import compose.icons.feathericons.PhoneCall
+import compose.icons.feathericons.Settings
+import com.example.shongket.R
+import com.example.shongket.ui.i18n.tr
+import com.example.shongket.ui.theme.BgCard
+import com.example.shongket.ui.theme.BrandTeal
+import com.example.shongket.ui.theme.BriefBlue
+import com.example.shongket.ui.theme.BrandTealDeep
+import com.example.shongket.ui.theme.CautionAmber
+import com.example.shongket.ui.theme.ErrorRed
+import com.example.shongket.ui.theme.SafeGreen
+import com.example.shongket.ui.theme.ShapeLg
+import com.example.shongket.ui.theme.ShapeMd
+import com.example.shongket.ui.theme.ShapePill
+import com.example.shongket.ui.theme.TextPrimary
+import com.example.shongket.ui.theme.TextSecondary
+
+/**
+ * The volunteer's side of the app.
+ *
+ * Everything here is for the person who is *not* the one in trouble: the neighbour with a
+ * boat, the student who walked in from the next union, the medic on a motorbike. Their
+ * problem is the opposite of the survivor's — they need to find people, understand them, and
+ * be findable themselves.
+ */
+@Composable
+fun VolunteerTab(
+    sharing: Boolean,
+    sharingBusy: Boolean,
+    onShareLocation: () -> Unit,
+    onStopSharing: () -> Unit,
+    onTriage: () -> Unit,
+    onSummary: () -> Unit,
+    onEmergency: () -> Unit,
+    onGuide: () -> Unit,
+    onSettings: () -> Unit,
+) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 18.dp)
+            .padding(top = 16.dp, bottom = 24.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier.size(44.dp).clip(CircleShape).background(BrandTeal.copy(alpha = 0.13f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    painterResource(R.drawable.ic_volunteer),
+                    contentDescription = null,
+                    tint = BrandTeal,
+                    modifier = Modifier.size(22.dp),
+                )
+            }
+            Spacer(Modifier.width(12.dp))
+            Column {
+                Text(
+                    tr("Volunteer", "স্বয়ংসেবক"),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = TextPrimary,
+                )
+                Text(
+                    tr("Tools for helping other people", "অন্যদের সাহায্য করার সরঞ্জাম"),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary,
+                )
+            }
+        }
+
+        // ---- Be findable ----
+        Spacer(Modifier.height(18.dp))
+        ShareCard(
+            sharing = sharing,
+            busy = sharingBusy,
+            onShare = onShareLocation,
+            onStop = onStopSharing,
+        )
+
+        // ---- Do the work ----
+        // The same tinted panel of white rows that Home uses. Two screens that do the same
+        // kind of thing — "here is a short list of tools, pick one" — should not look like two
+        // different apps, and the full-width row leaves room for a subtitle that finishes its
+        // sentence.
+        Spacer(Modifier.height(18.dp))
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .clip(ShapeLg)
+                .background(BrandTealDeep)
+                .padding(12.dp),
+        ) {
+            VolunteerRow(
+                icon = FeatherIcons.AlertTriangle, tint = CautionAmber,
+                title = tr("Who needs help first", "আগে কার সাহায্য দরকার"),
+                subtitle = tr("Every case on this phone, ranked", "এই ফোনের সব কেস, অগ্রাধিকার অনুযায়ী"),
+                onClick = onTriage,
+            )
+            Spacer(Modifier.height(8.dp))
+            VolunteerRow(
+                icon = FeatherIcons.BarChart2, tint = BriefBlue,
+                title = tr("Situation briefing", "পরিস্থিতির সারসংক্ষেপ"),
+                subtitle = tr("Counts, worst cases, shelter pressure", "সংখ্যা, খারাপ কেস, আশ্রয়ের চাপ"),
+                onClick = onSummary,
+            )
+        }
+    }
+}
+
+/** One white row inside the volunteer panel — the same shape as Home's. */
+@Composable
+private fun VolunteerRow(
+    icon: ImageVector,
+    tint: Color,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(ShapeMd)
+            .background(BgCard)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 15.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier.size(50.dp).clip(CircleShape).background(tint.copy(alpha = 0.13f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, null, tint = tint, modifier = Modifier.size(28.dp))
+        }
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            Text(
+                title,
+                fontWeight = FontWeight.ExtraBold,
+                style = MaterialTheme.typography.titleMedium,
+                color = tint,
+            )
+            Text(
+                subtitle,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleSmall,
+                color = tint,
+            )
+        }
+        Icon(FeatherIcons.ChevronRight, null, tint = tint.copy(alpha = 0.5f))
+    }
+}
+
+/**
+ * Announce that you are here and able to help.
+ *
+ * This posts your position to the same signed mesh the rest of the app uses, tagged as
+ * "rescue available", so it turns up on a stranger's Radar and on the neighbourhood board.
+ * It is off until you switch it on, and switching it off is one tap — a volunteer walking
+ * home should not still be advertising themselves as available.
+ */
+@Composable
+private fun ShareCard(sharing: Boolean, busy: Boolean, onShare: () -> Unit, onStop: () -> Unit) {
+    val tint = if (sharing) SafeGreen else BrandTeal
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(ShapeMd)
+            .background(tint.copy(alpha = 0.10f))
+            .padding(16.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier.size(40.dp).clip(CircleShape).background(tint),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (busy) {
+                    CircularProgressIndicator(
+                        Modifier.size(18.dp),
+                        strokeWidth = 2.dp,
+                        color = Color.White,
+                    )
+                } else {
+                    Icon(
+                        painterResource(R.drawable.ic_volunteer),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+            }
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text(
+                    if (sharing) {
+                        tr("You are visible as a volunteer", "আপনি স্বয়ংসেবক হিসেবে দেখা যাচ্ছেন")
+                    } else {
+                        tr("Share where you are", "আপনি কোথায় আছেন জানান")
+                    },
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = TextPrimary,
+                )
+                Text(
+                    if (sharing) {
+                        tr(
+                            "Nearby phones can see that help is at your location.",
+                            "কাছের ফোনগুলো দেখতে পাচ্ছে আপনার অবস্থানে সাহায্য আছে।",
+                        )
+                    } else {
+                        tr(
+                            "Puts you on the Radar of anyone nearby who needs help. Nothing leaves the mesh.",
+                            "কাছের যার সাহায্য দরকার তার রাডারে আপনি দেখা যাবেন। কিছুই মেশের বাইরে যায় না।",
+                        )
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary,
+                )
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(ShapePill)
+                .background(if (sharing) BgCard else tint)
+                .clickable(enabled = !busy) { if (sharing) onStop() else onShare() }
+                .padding(vertical = 11.dp),
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+        ) {
+            Text(
+                if (sharing) {
+                    tr("Stop sharing", "শেয়ার বন্ধ করুন")
+                } else {
+                    tr("I am here and can help", "আমি এখানে আছি, সাহায্য করতে পারি")
+                },
+                color = if (sharing) tint else Color.White,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 14.sp,
+            )
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
